@@ -47,8 +47,8 @@
     //#define OCTOFLATX
     //#define FLYING_WING
     //#define VTAIL4
-    //#define AIRPLANE
-	#define VTOLAIRPLANE
+    #define AIRPLANE
+	//#define VTOLAIRPLANE
     //#define SINGLECOPTER
     //#define DUALCOPTER
     //#define HELI_120_CCPM
@@ -1221,4 +1221,8 @@ Also note, that maqgnetic declination changes with time, so recheck your value e
 /*************************************************************************************************/
 
 #endif /* CONFIG_H_ */
+	#define VALUE_TO_STRING(x) #x
+	#define VALUE(x) VALUE_TO_STRING(x)	
+	#define VAR_NAME_VALUE(var) #var "="  VALUE(var)
+//	#pragma message( VAR_NAME_VALUE(PRI_SERVO_FROM))
 

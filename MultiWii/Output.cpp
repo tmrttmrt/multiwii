@@ -48,7 +48,7 @@ void initializeServo();
 #endif
 #if defined(MEGA)
   #if defined(VTOLAIRPLANE)
-	#error "VTOLAIRPLANE not yet implemented on PROMICRO"
+	#error "VTOLAIRPLANE not yet implemented on MEGA"
   #else
 	uint8_t PWM_PIN[8] = {3,5,6,2,7,8,9,10};      //for a quad+: rear,right,left,front   //+ for y6: 7:under right  8:under left
   #endif
@@ -1540,9 +1540,11 @@ void mixTable() {
   // don't add offset for camtrig servo (SERVO3)
   #if defined(SERVO)
     for(i=SERVO_START-1; i<SERVO_END; i++) {
+	#if !defined(VTOLAIRPLANE)	
       if(i < 2) {
         servo[i] = map(servo[i], 1020,2000, conf.servoConf[i].min, conf.servoConf[i].max);   // servo travel scaling, only for gimbal servos
       }
+	#endif
     #if defined(HELICOPTER) && (YAWMOTOR)
       if(i != 5) // not limit YawMotor
     #endif
