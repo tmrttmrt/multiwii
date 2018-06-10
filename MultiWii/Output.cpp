@@ -1298,6 +1298,23 @@ void mixTable() {
       servo[i]  = ((int32_t)conf.servoConf[i].rate * servo[i])/100L;  // servo rates
       servo[i] += get_middle(i);
     }
+  #elif defined( VTOLAIRPLANE )
+    if(f.PASSTHRU_MODE){   // Direct passthru from RX
+	  servo[2] = rcCommand[ROLL];     //   Wing 1
+      servo[3] = rcCommand[ROLL];     //   Wing 2
+      servo[4] = rcCommand[YAW];                      //   Rudder
+      servo[5] = rcCommand[PITCH]; 
+	  motor[0] = rcCommand[THROTTLE];
+	  motor[1] = rcCommand[THROTTLE];
+	}
+	else {
+      servo[2] = axisPID[ROLL];     //   Wing 1
+      servo[3] = axisPID[ROLL];     //   Wing 2
+      servo[4] = axisPID[YAW];                      //   Rudder
+      servo[5] = axisPID[PITCH];                    //   Elevator
+	  motor[0] = rcCommand[THROTTLE];
+	  motor[1] = rcCommand[THROTTLE];
+	}
   #elif defined( SINGLECOPTER )
     /***************************          Single & DualCopter          ******************************/
     // Singlecopter

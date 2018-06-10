@@ -156,7 +156,7 @@
 /**************************************************************************************/
 #define SERVO_RATES      {30,30,100,100,100,100,100,100}
 
-#if defined (AIRPLANE) || defined(FLYING_WING)
+#if defined (AIRPLANE) || defined(FLYING_WING) || defined(VTOLAIRPLANE)
   #define FIXEDWING
 #endif
 
@@ -223,7 +223,14 @@
     #undef CAMTRIG             // Disable Camtrig on A2
   #else
     #define PRI_SERVO_FROM   4 // use servo from 4 to 8
-  #endif  
+  #endif 
+#elif defined(VTOLAIRPLANE)
+	#define NUMBER_MOTOR   2
+	#define PRI_SERVO_TO   6
+	#define PRI_SERVO_FROM   0
+    #undef CAMTRIG             // Disable Camtrig on A2
+	#undef SERVO_MIX_TILT
+    #undef  SERVO_TILT
 #elif defined(BI)
   #define NUMBER_MOTOR     2
   #define PRI_SERVO_FROM   5 // use servo from 5 to 6
@@ -1751,7 +1758,7 @@
   #define MULTITYPE 12   //12  for MultiWinGui
 #elif defined(OCTOFLATX)
   #define MULTITYPE 13   //13  for MultiWinGui 
-#elif defined(AIRPLANE)
+#elif defined(AIRPLANE) || defined(VTOLAIRPLANE)
   #define MULTITYPE 14    
   #define SERVO_RATES      {30,30,100,100,-100,100,100,100}
 #elif defined (HELI_120_CCPM)   

@@ -877,6 +877,8 @@ void initLCD() {
       strcpy_P(line2,PSTR("  OCTOFLAT-X"));
     #elif defined (AIRPLANE)
       strcpy_P(line2,PSTR("  AIRPLANE"));
+    #elif defined (VTOLAIRPLANE)
+      strcpy_P(line2,PSTR("  VTOLAIRPLANE"));
     #elif defined (HELI_120_CCPM)
       strcpy_P(line2,PSTR("  HELI_120_CCPM"));
     #elif defined (HELI_90_DEG)
