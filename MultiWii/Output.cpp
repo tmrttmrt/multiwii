@@ -17,16 +17,9 @@ void initializeServo();
 // since we are uing the PWM generation in a direct way, the pin order is just to inizialie the right pins 
 // its not possible to change a PWM output pin just by changing the order
 #if defined(PROMINI)
-  #if defined(VTOLAIRPLANE)
-	uint8_t PWM_PIN[8] = {9,10,11,3,6,5,A2,12};   
-  #else
 	uint8_t PWM_PIN[8] = {9,10,11,3,6,5,A2,12};   //for a quad+: rear,right,left,front
-  #endif
 #endif
 #if defined(PROMICRO)
-  #if defined(VTOLAIRPLANE)
-	#error "VTOLAIRPLANE not yet implemented on PROMICRO"
-  #else
 	  #if !defined(HWPWM6)
 		#if defined(TEENSY20)
 		  uint8_t PWM_PIN[8] = {14,15,9,12,22,18,16,17};   //for a quad+: rear,right,left,front
@@ -44,14 +37,9 @@ void initializeServo();
 		  uint8_t PWM_PIN[8] = {9,10,5,6,11,13,SW_PWM_P3,SW_PWM_P4};   //for a quad+: rear,right,left,front
 		#endif
 	  #endif
-  #endif
 #endif
 #if defined(MEGA)
-  #if defined(VTOLAIRPLANE)
-	#error "VTOLAIRPLANE not yet implemented on MEGA"
-  #else
 	uint8_t PWM_PIN[8] = {3,5,6,2,7,8,9,10};      //for a quad+: rear,right,left,front   //+ for y6: 7:under right  8:under left
-  #endif
 #endif
 
 /**************************************************************************************/
@@ -737,7 +725,6 @@ void initializeServo() {
       SERVO_8_PINMODE;
     #endif
   #endif
-
   #if defined(SERVO_1_HIGH)
     #if defined(PROMINI) || (defined(PROMICRO) && defined(HWPWM6)) // uses timer 0 Comperator A (8 bit)
       TCCR0A = 0; // normal counting mode
@@ -1312,8 +1299,8 @@ void mixTable() {
     }
   #elif defined( VTOLAIRPLANE )
     if(f.PASSTHRU_MODE){   // Direct passthru from RX
-	  servo[0] = rcCommand[AUX1];     
-      servo[1] = rcCommand[AUX1];     
+	  servo[0] = rcData[AUX1]-MIDRC;     
+      servo[1] = rcData[AUX1]-MIDRC;     
 	  servo[2] = rcCommand[ROLL];     
       servo[3] = rcCommand[ROLL];    
       servo[4] = rcCommand[ROLL];                     
@@ -1335,6 +1322,10 @@ void mixTable() {
 	  motor[0] = rcCommand[THROTTLE]+axisPID[PITCH];
 	  motor[1] = rcCommand[THROTTLE]+axisPID[PITCH];
 	}
+	for(i=0;i<8;i++) {
+      servo[i]  = ((int32_t)conf.servoConf[i].rate * servo[i])/100L;  // servo rates
+      servo[i] += get_middle(i);
+    }
   #elif defined( SINGLECOPTER )
     /***************************          Single & DualCopter          ******************************/
     // Singlecopter

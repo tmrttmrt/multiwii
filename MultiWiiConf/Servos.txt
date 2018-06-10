@@ -1,0 +1,8 @@
+/* Defaut Servo settings exported from MultiWiiConf.
+   Place the defines in config.h
+   The Values will default if Eeprom is reset from Gui. */
+
+#define  SERVO_MIN  {1020, 1020, 1020, 1020, 1020, 1020, 1020, 1020}
+#define  SERVO_MAX  {2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000}
+#define  SERVO_MID  {1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500}
+#define  FORCE_SERVO_RATES  {100, 100, 100, 100, 100, 100, 100, 100}

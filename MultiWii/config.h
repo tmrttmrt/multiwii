@@ -47,8 +47,8 @@
     //#define OCTOFLATX
     //#define FLYING_WING
     //#define VTAIL4
-    #define AIRPLANE
-	//#define VTOLAIRPLANE
+    //#define AIRPLANE
+	#define VTOLAIRPLANE
     //#define SINGLECOPTER
     //#define DUALCOPTER
     //#define HELI_120_CCPM

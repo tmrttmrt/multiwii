@@ -1666,7 +1666,8 @@ void draw() {
         if(i>2)ServoSliderC[i].show();
         buttonSERVO.setLabel("SERVO");
         
-        if( multiType == PPM_TO_SERVO || multiType == VTOLAIRPLANE){ServoSliderC[i].show();ServoSliderMIN[i].show();ServoSliderMAX[i].show();RateSlider[i].hide();}
+        if( multiType == PPM_TO_SERVO){ServoSliderC[i].show();ServoSliderMIN[i].show();ServoSliderMAX[i].show();RateSlider[i].hide();}
+        if( multiType == VTOLAIRPLANE){ServoSliderC[i].show();ServoSliderMIN[i].hide();ServoSliderMAX[i].hide();RateSlider[i].show();}
         
         if( multiType == HELI_120_CCPM){
           if(i>2) {ServoSliderMIN[i].show();ServoSliderMAX[i].show();TxtMin.show();TxtMax.show();}
