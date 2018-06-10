@@ -226,8 +226,8 @@
   #endif 
 #elif defined(VTOLAIRPLANE)
 	#define NUMBER_MOTOR   2
-	#define PRI_SERVO_TO   6
-	#define PRI_SERVO_FROM   0
+	#define PRI_SERVO_TO   8
+	#define PRI_SERVO_FROM   1
     #undef CAMTRIG             // Disable Camtrig on A2
 	#undef SERVO_MIX_TILT
     #undef  SERVO_TILT
@@ -388,12 +388,21 @@
   #define SERVO_6_PINMODE            DDRD|= 1<<3; // pin 3    // TRI REAR - BI RIGHT
   #define SERVO_6_PIN_HIGH           PORTD|= 1<<3;
   #define SERVO_6_PIN_LOW            PORTD &= ~(1<<3);
-  #define SERVO_7_PINMODE            DDRB |= 1<<2; // pin 10  // new
-  #define SERVO_7_PIN_HIGH           PORTB |= 1<<2;
-  #define SERVO_7_PIN_LOW            PORTB &= ~(1<<2);
-  #define SERVO_8_PINMODE            DDRB |= 1<<1; // pin 9  // new
-  #define SERVO_8_PIN_HIGH           PORTB |= 1<<1;
-  #define SERVO_8_PIN_LOW            PORTB &= ~(1<<1);
+  #if defined(VTOLAIRPLANE)
+	  #define SERVO_7_PINMODE            DDRD |= 1<<5; // pin 5  // new
+	  #define SERVO_7_PIN_HIGH           PORTD |= 1<<5;;
+	  #define SERVO_7_PIN_LOW            PORTD &= ~(1<<5);
+	  #define SERVO_8_PINMODE            DDRD |= 1<<6; // pin 6  // new
+	  #define SERVO_8_PIN_HIGH           PORTD |= 1<<6;
+	  #define SERVO_8_PIN_LOW            PORTD &= ~(1<<6);
+  #else
+	  #define SERVO_7_PINMODE            DDRB |= 1<<2; // pin 10  // new
+	  #define SERVO_7_PIN_HIGH           PORTB |= 1<<2;
+	  #define SERVO_7_PIN_LOW            PORTB &= ~(1<<2);
+	  #define SERVO_8_PINMODE            DDRB |= 1<<1; // pin 9  // new
+	  #define SERVO_8_PIN_HIGH           PORTB |= 1<<1;
+	  #define SERVO_8_PIN_LOW            PORTB &= ~(1<<1);
+  #endif  
 #endif
 
 /**************************  atmega32u4 (Promicro)  ***********************************/
@@ -1758,7 +1767,7 @@
   #define MULTITYPE 12   //12  for MultiWinGui
 #elif defined(OCTOFLATX)
   #define MULTITYPE 13   //13  for MultiWinGui 
-#elif defined(AIRPLANE) || defined(VTOLAIRPLANE)
+#elif defined(AIRPLANE)
   #define MULTITYPE 14    
   #define SERVO_RATES      {30,30,100,100,-100,100,100,100}
 #elif defined (HELI_120_CCPM)   
@@ -1775,13 +1784,16 @@
   #define SERVO_RATES      {30,30,100,0,1,0,1,100}
 #elif defined(DUALCOPTER)
   #define MULTITYPE 20
+ #elif defined(VTOLAIRPLANE)
+  #define MULTITYPE 22    
+  #define SERVO_RATES      {30,30,100,100,-100,100,100,100}
 #endif
 
 /**************************************************************************************/
 /***************          Some unsorted "chain" defines            ********************/
 /**************************************************************************************/
 
-#if defined (AIRPLANE) || defined(HELICOPTER)|| defined(SINGLECOPTER)|| defined(DUALCOPTER) && defined(PROMINI) 
+#if defined (VTOLAIRPLANE) || defined (AIRPLANE) || defined(HELICOPTER)|| defined(SINGLECOPTER)|| defined(DUALCOPTER) && defined(PROMINI) 
   #if defined(D12_POWER)
     #define SERVO_4_PINMODE            ;  // D12
     #define SERVO_4_PIN_HIGH           ;

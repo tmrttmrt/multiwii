@@ -1075,6 +1075,16 @@ const char PROGMEM lcd_param_text85 [] = "SERVoMID5";
 const char PROGMEM lcd_param_text86 [] = "SERVoMID6";
 const char PROGMEM lcd_param_text87 [] = "SERVoMID7";
 #endif
+#ifdef VTOLAIRPLANE //                       0123456789
+const char PROGMEM lcd_param_text87 [] = "SERVoMID0";
+const char PROGMEM lcd_param_text83 [] = "SERVoMID1";
+const char PROGMEM lcd_param_text83 [] = "SERVoMID2";
+const char PROGMEM lcd_param_text83 [] = "SERVoMID3";
+const char PROGMEM lcd_param_text84 [] = "SERVoMID4";
+const char PROGMEM lcd_param_text85 [] = "SERVoMID5";
+const char PROGMEM lcd_param_text86 [] = "SERVoMID6";
+const char PROGMEM lcd_param_text85 [] = "SERVoMID7";
+#endif
 #if GPS
 const char PROGMEM lcd_param_text91 [] = "GPS Pos. P";
 const char PROGMEM lcd_param_text92 [] = "GPS Pos. I";
@@ -1392,6 +1402,15 @@ PROGMEM const void * const lcd_param_ptr_table [] = {
   &lcd_param_text85, &conf.servoConf[5].middle, &__SE,
   &lcd_param_text86, &conf.servoConf[6].middle, &__SE,
 #endif
+#ifdef VTOLAIRPLANE
+  &lcd_param_text83, &conf.servoConf[0].middle, &__SE,
+  &lcd_param_text83, &conf.servoConf[1].middle, &__SE,
+  &lcd_param_text83, &conf.servoConf[2].middle, &__SE,
+  &lcd_param_text83, &conf.servoConf[3].middle, &__SE,
+  &lcd_param_text84, &conf.servoConf[4].middle, &__SE,
+  &lcd_param_text85, &conf.servoConf[5].middle, &__SE,
+#endif
+
 #ifdef MMGYRO
   &lcd_param_text121, &conf.mmgyro, &__D,
 #endif
