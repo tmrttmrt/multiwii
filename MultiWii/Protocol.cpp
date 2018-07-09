@@ -463,14 +463,26 @@ void evaluateCommand(uint8_t c) {
       s_struct((uint8_t*)&imu,18);
       break;
     case MSP_SERVO:
+	#if defined(VTOLAIRPLANE)
+      s_struct((uint8_t*)&servo,20);
+	#else
       s_struct((uint8_t*)&servo,16);
+	#endif
       break;
     case MSP_SERVO_CONF:
+	#if defined(VTOLAIRPLANE)
+      s_struct((uint8_t*)&conf.servoConf[0].min,70); // struct servo_conf_ is 7 bytes length: min:2 / max:2 / middle:2 / rate:1    ----     10 servo =>  10x7 = 70
+	#else
       s_struct((uint8_t*)&conf.servoConf[0].min,56); // struct servo_conf_ is 7 bytes length: min:2 / max:2 / middle:2 / rate:1    ----     8 servo =>  8x7 = 56
+	#endif
       break;
     case MSP_SET_SERVO_CONF:
       mspAck();
+	#if defined(VTOLAIRPLANE)
+      s_struct_w((uint8_t*)&conf.servoConf[0].min,70);
+	#else
       s_struct_w((uint8_t*)&conf.servoConf[0].min,56);
+	#endif
       break;
     case MSP_MOTOR:
       s_struct((uint8_t*)&motor,16);

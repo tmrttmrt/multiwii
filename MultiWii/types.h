@@ -188,7 +188,11 @@ typedef struct {
   #if MAG
     int16_t mag_declination;
   #endif
-  servo_conf_ servoConf[8];
+  #if defined(VTOLAIRPLANE)
+	servo_conf_ servoConf[10];
+  #else
+	servo_conf_ servoConf[8];
+  #endif
   #if defined(GYRO_SMOOTHING)
     uint8_t Smoothing[3];
   #endif

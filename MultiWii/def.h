@@ -226,7 +226,7 @@
   #endif 
 #elif defined(VTOLAIRPLANE)
 	#define NUMBER_MOTOR   2
-	#define PRI_SERVO_TO   8
+	#define PRI_SERVO_TO   10
 	#define PRI_SERVO_FROM   1
     #undef CAMTRIG             // Disable Camtrig on A2
 	#undef SERVO_MIX_TILT
@@ -395,6 +395,12 @@
 	  #define SERVO_8_PINMODE            DDRD |= 1<<6; // pin 6  // new
 	  #define SERVO_8_PIN_HIGH           PORTD |= 1<<6;
 	  #define SERVO_8_PIN_LOW            PORTD &= ~(1<<6);
+	  #define SERVO_9_PINMODE            DDRD |= 1<<4; // pin 4  // new
+	  #define SERVO_9_PIN_HIGH           PORTD |= 1<<4;
+	  #define SERVO_9_PIN_LOW            PORTD &= ~(1<<4);
+	  #define SERVO_10_PINMODE            DDRD |= 1<<7; // pin 7  // new
+	  #define SERVO_10_PIN_HIGH           PORTD |= 1<<7;
+	  #define SERVO_10_PIN_LOW            PORTD &= ~(1<<7);
   #else
 	  #define SERVO_7_PINMODE            DDRB |= 1<<2; // pin 10  // new
 	  #define SERVO_7_PIN_HIGH           PORTB |= 1<<2;
@@ -873,6 +879,98 @@
     #define SERVO_8_HIGH SERVO_8_PIN_HIGH
     #define SERVO_8_LOW SERVO_8_PIN_LOW  
     #define SERVO_8_ARR_POS 7   
+  #endif
+#endif
+
+#if (PRI_SERVO_FROM <= 9 && PRI_SERVO_TO >= 9) || (SEC_SERVO_FROM <= 9 && SEC_SERVO_TO >= 9) 
+  #undef LAST_LOW
+  #define LAST_LOW SERVO_6_PIN_LOW
+  #undef LAST1_LOW
+  #define LAST1_LOW SERVO_9_PIN_LOW
+  #if !defined(SERVO_1_HIGH)
+    #define SERVO_1_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_1_LOW SERVO_8_PIN_LOW 
+    #define SERVO_1_ARR_POS 8 
+  #elif !defined(SERVO_2_HIGH)
+    #define SERVO_2_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_2_LOW SERVO_8_PIN_LOW
+    #define SERVO_2_ARR_POS 8
+  #elif !defined(SERVO_3_HIGH)
+    #define SERVO_3_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_3_LOW SERVO_8_PIN_LOW
+    #define SERVO_3_ARR_POS 8  
+  #elif !defined(SERVO_4_HIGH)
+    #define SERVO_4_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_4_LOW SERVO_8_PIN_LOW
+    #define SERVO_4_ARR_POS 8  
+  #elif !defined(SERVO_5_HIGH)
+    #define SERVO_5_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_5_LOW SERVO_8_PIN_LOW 
+    #define SERVO_5_ARR_POS 8  
+  #elif !defined(SERVO_6_HIGH)
+    #define SERVO_6_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_6_LOW SERVO_8_PIN_LOW 
+    #define SERVO_6_ARR_POS 8 
+  #elif !defined(SERVO_7_HIGH)
+    #define SERVO_7_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_7_LOW SERVO_8_PIN_LOW 
+    #define SERVO_7_ARR_POS 8  
+  #elif !defined(SERVO_8_HIGH)
+    #define SERVO_8_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_8_LOW SERVO_8_PIN_LOW  
+    #define SERVO_8_ARR_POS 8   
+  #else 
+    #define SERVO_9_HIGH SERVO_9_PIN_HIGH
+    #define SERVO_9_LOW SERVO_9_PIN_LOW  
+    #define SERVO_9_ARR_POS 8   
+  #endif
+#endif
+
+#if (PRI_SERVO_FROM <= 10 && PRI_SERVO_TO >= 10) || (SEC_SERVO_FROM <= 10 && SEC_SERVO_TO >= 10) 
+  #undef LAST_LOW
+  #define LAST_LOW SERVO_6_PIN_LOW
+  #undef LAST1_LOW
+  #define LAST1_LOW SERVO_10_PIN_LOW
+  #if !defined(SERVO_1_HIGH)
+    #define SERVO_1_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_1_LOW SERVO_8_PIN_LOW 
+    #define SERVO_1_ARR_POS 9 
+  #elif !defined(SERVO_2_HIGH)
+    #define SERVO_2_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_2_LOW SERVO_8_PIN_LOW
+    #define SERVO_2_ARR_POS 9
+  #elif !defined(SERVO_3_HIGH)
+    #define SERVO_3_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_3_LOW SERVO_8_PIN_LOW
+    #define SERVO_3_ARR_POS 9  
+  #elif !defined(SERVO_4_HIGH)
+    #define SERVO_4_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_4_LOW SERVO_8_PIN_LOW
+    #define SERVO_4_ARR_POS 9  
+  #elif !defined(SERVO_5_HIGH)
+    #define SERVO_5_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_5_LOW SERVO_8_PIN_LOW 
+    #define SERVO_5_ARR_POS 9  
+  #elif !defined(SERVO_6_HIGH)
+    #define SERVO_6_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_6_LOW SERVO_8_PIN_LOW 
+    #define SERVO_6_ARR_POS 9 
+  #elif !defined(SERVO_7_HIGH)
+    #define SERVO_7_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_7_LOW SERVO_8_PIN_LOW 
+    #define SERVO_7_ARR_POS 9  
+  #elif !defined(SERVO_8_HIGH)
+    #define SERVO_8_HIGH SERVO_8_PIN_HIGH
+    #define SERVO_8_LOW SERVO_8_PIN_LOW  
+    #define SERVO_8_ARR_POS 9   
+  #elif !defined(SERVO_9_HIGH)
+    #define SERVO_9_HIGH SERVO_9_PIN_HIGH
+    #define SERVO_9_LOW SERVO_9_PIN_LOW  
+    #define SERVO_9_ARR_POS 9   
+  #else 
+    #define SERVO_10_HIGH SERVO_10_PIN_HIGH
+    #define SERVO_10_LOW SERVO_10_PIN_LOW  
+    #define SERVO_10_ARR_POS 9   
   #endif
 #endif
 
@@ -1786,7 +1884,7 @@
   #define MULTITYPE 20
  #elif defined(VTOLAIRPLANE)
   #define MULTITYPE 22    
-  #define SERVO_RATES      {30,30,100,100,-100,100,100,100}
+  #define SERVO_RATES      {100,100,100,100,100,100,100,100,100,100}
 #endif
 
 /**************************************************************************************/

@@ -84,7 +84,9 @@ void initializeServo();
     #if defined(AIRPLANE) || defined(HELICOPTER)
       // To prevent motor to start at reset. atomicServo[7]=5 or 249 if reversed servo
       volatile uint8_t atomicServo[8] = {125,125,125,125,125,125,125,5};
-    #else
+    #elif defined(VTOLAIRPLANE)
+		volatile uint8_t atomicServo[10] = {125,125,125,125,125,125,125,125,125,125};
+	#else
       volatile uint8_t atomicServo[8] = {125,125,125,125,125,125,125,125};
     #endif
   #else
@@ -724,6 +726,12 @@ void initializeServo() {
     #if (PRI_SERVO_FROM <= 8 && PRI_SERVO_TO >= 8) || (SEC_SERVO_FROM <= 8 && SEC_SERVO_TO >= 8) 
       SERVO_8_PINMODE;
     #endif
+    #if (PRI_SERVO_FROM <= 9 && PRI_SERVO_TO >= 9) || (SEC_SERVO_FROM <= 9 && SEC_SERVO_TO >= 9) 
+      SERVO_9_PINMODE;
+    #endif
+    #if (PRI_SERVO_FROM <= 10 && PRI_SERVO_TO >= 10) || (SEC_SERVO_FROM <= 10 && SEC_SERVO_TO >= 10) 
+      SERVO_10_PINMODE;
+    #endif
   #endif
   #if defined(SERVO_1_HIGH)
     #if defined(PROMINI) || (defined(PROMICRO) && defined(HWPWM6)) // uses timer 0 Comperator A (8 bit)
@@ -752,6 +760,17 @@ void initializeServo() {
       #define SERVO_1K_US 16000 
     #endif
   #endif
+  #if defined(SERVO_9_HIGH) // 
+	#if defined(PROMINI)
+	  TIMSK0 |= (1<<OCIE0B); // Enable CTC interrupt
+      #define SERVO1_ISR TIMER0_COMPB_vect
+      #define SERVO1_CHANNEL OCR0B
+      #define SERVO1_1K_US 250
+	#else
+		#error "More than 8 soft PWM servos implemented only for PROMINI"
+	#endif
+  #endif
+  
 
   #if defined(MEGA) && defined(MEGA_HW_PWM_SERVOS)
     #if defined(SERVO_RFR_RATE)
@@ -925,12 +944,14 @@ void initializeServo() {
     #if defined(SERVO_6_HIGH)
       SERVO_PULSE(SERVO_6_HIGH,10,SERVO_6_ARR_POS,SERVO_5_LOW);
     #endif
-    #if defined(SERVO_7_HIGH)
-      SERVO_PULSE(SERVO_7_HIGH,12,SERVO_7_ARR_POS,SERVO_6_LOW);
-    #endif
-    #if defined(SERVO_8_HIGH)
-      SERVO_PULSE(SERVO_8_HIGH,14,SERVO_8_ARR_POS,SERVO_7_LOW);
-    #endif
+	#if !defined(SERVO1_ISR) //More than 8 soft PWM servos; servos above 7 are generated in another ISR 
+		#if defined(SERVO_7_HIGH)
+		  SERVO_PULSE(SERVO_7_HIGH,12,SERVO_7_ARR_POS,SERVO_6_LOW);
+		#endif
+		#if defined(SERVO_8_HIGH)
+		  SERVO_PULSE(SERVO_8_HIGH,14,SERVO_8_ARR_POS,SERVO_7_LOW);
+		#endif
+	#endif
     }else{
       LAST_LOW;
       #if defined(SERVO_RFR_300HZ)
@@ -961,6 +982,75 @@ void initializeServo() {
       #endif   
       #if defined(SERVO_RFR_50HZ) // to have ~ 50Hz for all servos
         SERVO_CHANNEL+=SERVO_1K_US;
+        if(state<30){
+          state+=2;
+        }else{
+          state=0;
+        }     
+      #endif
+    }
+  } 
+  #endif
+  
+  #if defined(SERVO_9_HIGH)
+  #define SERVO1_PULSE(PIN_HIGH,ACT_STATE,SERVO_NUM,LAST_PIN_LOW) \
+    }else if(state == ACT_STATE){                                \
+      LAST_PIN_LOW;                                              \
+      PIN_HIGH;                                                  \
+      SERVO1_CHANNEL+=SERVO_1K_US;                                \
+      state++;                                                   \
+    }else if(state == ACT_STATE+1){                              \
+      SERVO1_CHANNEL+=atomicServo[SERVO_NUM];                     \
+      state++;                                                   \
+  
+  ISR(SERVO1_ISR) {
+    static uint8_t state = 0; // indicates the current state of the chain
+    if(state == 0){
+      SERVO_7_HIGH; // set servo 1's pin high 
+      SERVO1_CHANNEL+=SERVO1_1K_US; // wait 1000us
+      state++; // count up the state
+    }else if(state==1){
+      SERVO1_CHANNEL+=atomicServo[SERVO_7_ARR_POS]; // load the servo's value (0-1000us)
+      state++; // count up the state
+    #if defined(SERVO_8_HIGH)
+      SERVO1_PULSE(SERVO_8_HIGH,2,SERVO_8_ARR_POS,SERVO_7_LOW); // the same here
+    #endif
+    #if defined(SERVO_9_HIGH)
+      SERVO1_PULSE(SERVO_9_HIGH,4,SERVO_9_ARR_POS,SERVO_8_LOW);
+    #endif
+    #if defined(SERVO_10_HIGH)
+      SERVO1_PULSE(SERVO_10_HIGH,6,SERVO_10_ARR_POS,SERVO_9_LOW);
+    #endif
+    }else{
+      LAST1_LOW;
+      #if defined(SERVO_RFR_300HZ)
+        #if defined(SERVO_10_HIGH)  // if there are 3 or more servos we dont need to slow it down
+          SERVO1_CHANNEL+=(SERVO_1K_US>>3); // 0 would be better but it causes bad jitter
+          state=0; 
+        #else // if there are less then 3 servos we need to slow it to not go over 300Hz (the highest working refresh rate for the digital servos for what i know..)
+          SERVO1_CHANNEL+=SERVO_1K_US;
+          if(state<4){
+            state+=2;
+          }else{
+            state=0;
+          }
+        #endif
+      #endif
+      #if defined(SERVO_RFR_160HZ)
+        #if defined(SERVO_11_HIGH)  // if there are 4 or more servos we dont need to slow it down
+          SERVO1_CHANNEL+=(SERVO1_1K_US>>3); // 0 would be better but it causes bad jitter
+          state=0; 
+        #else // if there are less then 4 servos we need to slow it to not go over ~170Hz (the highest working refresh rate for analog servos)
+          SERVO1_CHANNEL+=SERVO1_1K_US;
+          if(state<8){
+            state+=2;
+          }else{
+            state=0;
+          }
+        #endif
+      #endif   
+      #if defined(SERVO_RFR_50HZ) // to have ~ 50Hz for all servos
+        SERVO1_CHANNEL+=SERVO1_1K_US;
         if(state<30){
           state+=2;
         }else{
@@ -1307,6 +1397,8 @@ void mixTable() {
       servo[5] = rcCommand[ROLL]; 
       servo[6] = rcCommand[PITCH]; 
       servo[7] = rcCommand[YAW]; 
+      servo[8] = rcCommand[AUX1]; 
+      servo[9] = rcCommand[AUX1]; 
 	  motor[0] = rcCommand[THROTTLE];
 	  motor[1] = rcCommand[THROTTLE];
 	}
@@ -1319,10 +1411,12 @@ void mixTable() {
       servo[5] = rcCommand[ROLL]; 
       servo[6] = rcCommand[PITCH]; 
       servo[7] = rcCommand[YAW]; 
+      servo[8] = rcCommand[AUX1]; 
+      servo[9] = rcCommand[AUX1]; 
 	  motor[0] = rcCommand[THROTTLE]+axisPID[PITCH];
 	  motor[1] = rcCommand[THROTTLE]+axisPID[PITCH];
 	}
-	for(i=0;i<8;i++) {
+	for(i=0;i<10;i++) {
       servo[i]  = ((int32_t)conf.servoConf[i].rate * servo[i])/100L;  // servo rates
       servo[i] += get_middle(i);
     }

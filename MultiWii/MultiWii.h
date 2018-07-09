@@ -60,8 +60,11 @@ extern int16_t angle[2];
 
 extern int16_t axisPID[3];
 extern int16_t motor[8];
-extern int16_t servo[8];
-
+#if defined(VTOLAIRPLANE)
+	extern int16_t servo[10];
+#else
+	extern int16_t servo[8];
+#endif
 extern int16_t failsafeEvents;
 extern volatile int16_t failsafeCnt;
 

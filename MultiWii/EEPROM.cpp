@@ -181,13 +181,18 @@ void LoadDefaults() {
     conf.powerTrigger1 = 0;
   #endif // SUPPRESS_DEFAULTS_FROM_GUI
   #if defined(SERVO)
-    static int8_t sr[8] = SERVO_RATES;
+	#if defined(VTOLAIRPLANE)
+		#define NSERV 10
+	#else
+		#define NSERV 8
+	#endif
+    static int8_t sr[NSERV] = SERVO_RATES;
     #ifdef SERVO_MIN
-      static int16_t smin[8] = SERVO_MIN;
-      static int16_t smax[8] = SERVO_MAX;
-      static int16_t smid[8] = SERVO_MID;
+      static int16_t smin[NSERV] = SERVO_MIN;
+      static int16_t smax[NSERV] = SERVO_MAX;
+      static int16_t smid[NSERV] = SERVO_MID;
     #endif
-    for(i=0;i<8;i++) {
+    for(i=0;i<NSERV;i++) {
       #ifdef SERVO_MIN
         conf.servoConf[i].min = smin[i];
         conf.servoConf[i].max = smax[i];
@@ -199,6 +204,7 @@ void LoadDefaults() {
       #endif
       conf.servoConf[i].rate = sr[i];
     }
+	#undef NSERV
   #else                   //if no servo defined then zero out the config variables to prevent passing false data to the gui.
 //    for(i=0;i<8;i++) {
 //        conf.servoConf[i].min = 0;

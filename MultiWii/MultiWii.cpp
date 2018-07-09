@@ -294,7 +294,11 @@ uint16_t lookupThrottleRC[11];// lookup table for expo & mid THROTTLE
 // *************************
 int16_t axisPID[3];
 int16_t motor[8];
-int16_t servo[8] = {1500,1500,1500,1500,1500,1500,1500,1000};
+#if defined(VTOLAIRPLANE)
+	int16_t servo[10] = {1500,1500,1500,1500,1500,1500,1500,1500,1500,1500};
+#else
+	int16_t servo[8] = {1500,1500,1500,1500,1500,1500,1500,1000};
+#endif
 
 // ************************
 // EEPROM Layout definition
