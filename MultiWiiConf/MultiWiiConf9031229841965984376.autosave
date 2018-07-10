@@ -954,9 +954,9 @@ public void evaluateCommand(byte cmd, int dataSize) {
 				ServoSliderMAX[i].setValue(ServoMAX[i]);
 				ServoSliderC[i].setValue(ServoMID[i]);
 				if (servoRATE[i]>127){ // Reverse/Rate servos
-					Bbox.deactivate(i); 
+					Bbox.deactivate(i); RateSlider[i].setValue(abs(servoRATE[i]-256));
 				}else{
-					Bbox.activate(i);
+					Bbox.activate(i); RateSlider[i].setValue(abs(servoRATE[i]));
 				}
 			}
 		} else if (multiType == FLYING_WING || multiType == TRI || multiType == BI  || multiType == DUALCOPTER  || multiType == SINGLECOPTER) { // FlyingWing & TRI & BI
@@ -1253,7 +1253,7 @@ void draw() {
 					q= (int)ServoSliderMAX[i].getValue(); payload.add(char (q % 256) ); payload.add(char (q / 256)  ); // Max
 					q= (int)(ServoSliderC[i].getValue()); payload.add(char (q % 256) ); payload.add(char (q / 256)  ); // Servo centers
 
-					servoRATE[i] = (int)100;
+					servoRATE[i] = int(RateSlider[i].getValue());
 					if ((int)Bbox.getArrayValue()[i]==1){ servoRATE[i] = abs(servoRATE[i]);}else{ servoRATE[i] = abs(servoRATE[i])*-1;}// Direction
 					payload.add(char(servoRATE[i])); // servoRATE
 				}
@@ -2134,29 +2134,29 @@ void draw() {
 		textFont(font12);
 		text("VTOLAIRPLANE", -40,-50);camera();popMatrix();
 
-		servoSliderH[0].setPosition(xMot,yMot-5)  .setCaptionLabel("Elevator").show();
-		servoSliderH[1].setPosition(xMot,yMot+15) .setCaptionLabel("Ail-1").show();
-		servoSliderH[2].setPosition(xMot,yMot+35) .setCaptionLabel("Ail-2").show();
-		servoSliderH[3].setPosition(xMot,yMot+55) .setCaptionLabel("Rudder").show();
-		servoSliderH[4].setPosition(xMot,yMot+75).setCaptionLabel("MTilt-1").show();
-		servoSliderH[5].setPosition(xMot,yMot+95) .setCaptionLabel("MTilt-2").show();
-		servoSliderH[6].setPosition(xMot,yMot+115).setCaptionLabel("Cycl-1").show();
-		servoSliderH[7].setPosition(xMot,yMot+135).setCaptionLabel("Cycl-2").show();
-		servoSliderH[8].setPosition(xMot,yMot+155).setCaptionLabel("Coll-1").show();
-		servoSliderH[9].setPosition(xMot,yMot+175).setCaptionLabel("Coll-2").show();
+		servoSliderH[0].setPosition(xMot,yMot-5)  .setCaptionLabel("S1").show();
+		servoSliderH[1].setPosition(xMot,yMot+15) .setCaptionLabel("S2").show();
+		servoSliderH[2].setPosition(xMot,yMot+35) .setCaptionLabel("S3").show();
+		servoSliderH[3].setPosition(xMot,yMot+55) .setCaptionLabel("S4").show();
+		servoSliderH[4].setPosition(xMot,yMot+75).setCaptionLabel("S5").show();
+		servoSliderH[5].setPosition(xMot,yMot+95) .setCaptionLabel("S6").show();
+		servoSliderH[6].setPosition(xMot,yMot+115).setCaptionLabel("S7").show();
+		servoSliderH[7].setPosition(xMot,yMot+135).setCaptionLabel("S8").show();
+		servoSliderH[8].setPosition(xMot,yMot+155).setCaptionLabel("S9").show();
+		servoSliderH[9].setPosition(xMot,yMot+175).setCaptionLabel("S10").show();
 		TX_StickSlider[RCPitch].setCaptionLabel("Elev");
 		TX_StickSlider[RCYaw ].setCaptionLabel("Rudd");
 		
-		BtServo[0].setLabel("Elevator");
-		BtServo[1].setLabel("Ail-1");
-		BtServo[2].setLabel("Ail-2");
-		BtServo[3].setLabel("Rudder");
-		BtServo[4].setLabel("MTilt-1");
-		BtServo[5].setLabel("MTilt-2");
-		BtServo[6].setLabel("Cycl-1");
-		BtServo[7].setLabel("Cycl-2");
-		BtServo[8].setLabel("Coll-1");
-		BtServo[9].setLabel("Coll-2");//
+		BtServo[0].setLabel("S1");
+		BtServo[1].setLabel("S2");
+		BtServo[2].setLabel("S3");
+		BtServo[3].setLabel("S4");
+		BtServo[4].setLabel("S5");
+		BtServo[5].setLabel("S6");
+		BtServo[6].setLabel("S7");
+		BtServo[7].setLabel("S8");
+		BtServo[8].setLabel("S9");
+		BtServo[9].setLabel("S10");//
 		//    ServoSliderC[7].hide();ServoSliderMIN[7].hide();ServoSliderMAX[7].hide();
 		//    RateSlider[0].hide(); RateSlider[1].hide(); RateSlider[7].hide(); RateSlider[2].hide();
 	}else if (multiType == HELI_120_CCPM) { // 120 CCPM
@@ -2737,10 +2737,6 @@ public void controlEvent(ControlEvent theEvent) {
       servoSliderH[i].moveTo(ActiveTab);
       servoSliderV[i].moveTo(ActiveTab);
     }
-    for( i=8;i<10;i++) {
-      servoSliderH[i].moveTo(ActiveTab);
-      servoSliderV[i].moveTo(ActiveTab);
-	}	
     motorControlSlider.moveTo(ActiveTab);
 
     if(!Mag_)confINF[6].hide(); 
@@ -2802,7 +2798,6 @@ public void LIVE_SERVO() {
 public void SAVE_WING() {
   SAVE_Servo();
 }
-
 public void SAVE_Servo() {
   sendRequestMSP(requestMSP(MSP_EEPROM_WRITE));
 }

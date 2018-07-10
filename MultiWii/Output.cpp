@@ -1389,36 +1389,45 @@ void mixTable() {
     }
   #elif defined( VTOLAIRPLANE )
     if(f.PASSTHRU_MODE){   // Direct passthru from RX
-	  servo[0] = rcData[AUX1]-MIDRC;     
-      servo[1] = rcData[AUX1]-MIDRC;     
+	  servo[0] = rcCommand[PITCH];     
+      servo[1] = rcCommand[ROLL];     
 	  servo[2] = rcCommand[ROLL];     
-      servo[3] = rcCommand[ROLL];    
-      servo[4] = rcCommand[ROLL];                     
-      servo[5] = rcCommand[ROLL]; 
+      servo[3] = rcCommand[YAW];    
+      servo[4] = rcData[AUX1]-MIDRC;                     
+      servo[5] = rcData[AUX1]-MIDRC; 
       servo[6] = rcCommand[PITCH]; 
-      servo[7] = rcCommand[YAW]; 
-      servo[8] = rcCommand[AUX1]; 
-      servo[9] = rcCommand[AUX1]; 
+      servo[7] = rcCommand[PITCH]; 
+      servo[8] = rcData[AUX2]-MIDRC; 
+      servo[9] = rcData[AUX2]-MIDRC; 
 	  motor[0] = rcCommand[THROTTLE];
 	  motor[1] = rcCommand[THROTTLE];
 	}
 	else {
-	  servo[0] = axisPID[YAW];
-	  servo[1] = axisPID[YAW];
-      servo[2] = axisPID[ROLL];     
-      servo[3] = axisPID[ROLL];     
-      servo[4] = rcCommand[ROLL];                     
-      servo[5] = rcCommand[ROLL]; 
-      servo[6] = rcCommand[PITCH]; 
-      servo[7] = rcCommand[YAW]; 
-      servo[8] = rcCommand[AUX1]; 
-      servo[9] = rcCommand[AUX1]; 
-	  motor[0] = rcCommand[THROTTLE]+axisPID[PITCH];
-	  motor[1] = rcCommand[THROTTLE]+axisPID[PITCH];
+	  servo[0] = rcCommand[PITCH];     
+      servo[1] = rcCommand[ROLL];     
+	  servo[2] = rcCommand[ROLL];     
+      servo[3] = rcCommand[YAW];    
+      servo[4] = rcData[AUX1]-MIDRC+axisPID[YAW];                     
+      servo[5] = rcData[AUX1]-MIDRC-axisPID[YAW]; 
+      servo[6] = axisPID[PITCH]; 
+      servo[7] = axisPID[PITCH]; 
+      servo[8] = rcData[AUX2]-MIDRC; 
+      servo[9] = rcData[AUX2]-MIDRC; 
+	  motor[0] = rcCommand[THROTTLE]+axisPID[YAW];
+	  motor[1] = rcCommand[THROTTLE]-axisPID[YAW];
 	}
 	for(i=0;i<10;i++) {
-      servo[i]  = ((int32_t)conf.servoConf[i].rate * servo[i])/100L;  // servo rates
-      servo[i] += get_middle(i);
+	  int32_t mid;	
+//      servo[i]  = ((int32_t)conf.servoConf[i].rate * servo[i])/100L;  // servo rates
+      if(conf.servoConf[i].rate<0) servo[i]  = -servo[i];
+
+	  mid=constrain(get_middle(i), conf.servoConf[i].min, conf.servoConf[i].max);
+	  if(servo[i]>=0){
+		  servo[i] = map((int32_t)servo[i]+MIDRC,(int32_t)MIDRC,(int32_t)2000,mid,(int32_t)conf.servoConf[i].max);
+	  }else{
+		  servo[i] = map((int32_t)servo[i]+MIDRC,(int32_t)1000,(int32_t)MIDRC,(int32_t)conf.servoConf[i].min,mid);
+	  }
+	  servo[i] = constrain(servo[i], conf.servoConf[i].min, conf.servoConf[i].max);
     }
   #elif defined( SINGLECOPTER )
     /***************************          Single & DualCopter          ******************************/
@@ -1624,25 +1633,26 @@ void mixTable() {
   // add midpoint offset, then scale and limit servo outputs - except SERVO8 used commonly as Moror output
   // don't add offset for camtrig servo (SERVO3)
   #if defined(SERVO)
+	#if defined(VTOLAIRPLANE)	
+	#else
     for(i=SERVO_START-1; i<SERVO_END; i++) {
-	#if !defined(VTOLAIRPLANE)	
-      if(i < 2) {
-        servo[i] = map(servo[i], 1020,2000, conf.servoConf[i].min, conf.servoConf[i].max);   // servo travel scaling, only for gimbal servos
-      }
+		if(i < 2) {
+		servo[i] = map(servo[i], 1020,2000, conf.servoConf[i].min, conf.servoConf[i].max);   // servo travel scaling, only for gimbal servos
+		}
+		#if defined(HELICOPTER) && (YAWMOTOR)
+		  if(i != 5) // not limit YawMotor
+		#endif
+			servo[i] = constrain(servo[i], conf.servoConf[i].min, conf.servoConf[i].max); // limit the values
+		}
+		#if defined(A0_A1_PIN_HEX) && (NUMBER_MOTOR == 6) && defined(PROMINI)
+		  servo[3] = servo[0];    // copy CamPitch value to propper output servo for A0_A1_PIN_HEX
+		  servo[4] = servo[1];    // copy CamRoll  value to propper output servo for A0_A1_PIN_HEX
+		#endif
+		#if defined(TRI) && defined(MEGA_HW_PWM_SERVOS) && defined(MEGA)
+		  servo[5] = constrain(servo[5], conf.servoConf[5].min, conf.servoConf[5].max); // servo[5] is still use by gui for this config (more genereic)
+		  servo[3] = servo[5];    // copy TRI serwo value to propper output servo for MEGA_HW_PWM_SERVOS
+		#endif
 	#endif
-    #if defined(HELICOPTER) && (YAWMOTOR)
-      if(i != 5) // not limit YawMotor
-    #endif
-        servo[i] = constrain(servo[i], conf.servoConf[i].min, conf.servoConf[i].max); // limit the values
-    }
-    #if defined(A0_A1_PIN_HEX) && (NUMBER_MOTOR == 6) && defined(PROMINI)
-      servo[3] = servo[0];    // copy CamPitch value to propper output servo for A0_A1_PIN_HEX
-      servo[4] = servo[1];    // copy CamRoll  value to propper output servo for A0_A1_PIN_HEX
-    #endif
-    #if defined(TRI) && defined(MEGA_HW_PWM_SERVOS) && defined(MEGA)
-      servo[5] = constrain(servo[5], conf.servoConf[5].min, conf.servoConf[5].max); // servo[5] is still use by gui for this config (more genereic)
-      servo[3] = servo[5];    // copy TRI serwo value to propper output servo for MEGA_HW_PWM_SERVOS
-    #endif
   #endif
 
   /****************                compensate the Motors values                ******************/
